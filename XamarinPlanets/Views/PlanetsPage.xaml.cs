@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel;
+using System.Threading.Tasks;
+using Refit;
 using Xamarin.Forms;
 using XamarinPlanets.Models;
+using XamarinPlanets.Services;
 using XamarinPlanets.ViewModels;
 
 namespace XamarinPlanets.Views
@@ -28,6 +31,18 @@ namespace XamarinPlanets.Views
         private void OnTextChanged(object sender, TextChangedEventArgs e)
         {
             _planetsViewModel.SearchTerm = e.NewTextValue;
+        }
+
+        private async Task CallApiAsync()
+        {
+            var apiResponse = RestService.For<IPlanetApi>("https://api.le-systeme-solaire.net");
+            var planets = await apiResponse.GetPlanets();
+        }
+
+        protected async override void OnAppearing()
+        {
+            base.OnAppearing();
+            await CallApiAsync();
         }
     }
 }
